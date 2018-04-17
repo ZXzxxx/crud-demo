@@ -70,12 +70,19 @@ public class TeacherController extends BaseController {
 
         String[] schoolStringIds = schoolIds.split(","); //用数组效率高
         List<Integer>  schoolArrIds = new ArrayList<Integer>();
-        for (int i = 0; i<schoolStringIds.length; i++) {
-            schoolArrIds.add(Integer.parseInt(schoolStringIds[i]));
+        if(schoolStringIds[0] != ""){
+            for (int i = 0; i<schoolStringIds.length; i++) {
+                schoolArrIds.add(Integer.parseInt(schoolStringIds[i]));
+            }
         }
         Criteria<Teacher> criteria = new Criteria<>();
         criteria.setOperator(Criterion.Operator.AND); //这里 设置条件是and还是or
-        criteria.add(Restrictions.like("name", nameValue)).add(Restrictions.in("school", schoolArrIds));;
+        if (nameValue != "") {   //必须判断
+            criteria.add(Restrictions.like("name", nameValue));
+        }
+        if (!schoolArrIds.isEmpty()) {   //必须判断
+            criteria.add(Restrictions.in("school", schoolArrIds));
+        }
         Map<String, Object> map = new HashMap<String, Object>();
         Page<Teacher> list = teacherService.findPageTsByXX(criteria, new PageRequest(page-1, size));  //这个PageRequest咋回事?
         int total = teacherService.findTsByXX(criteria).size();
