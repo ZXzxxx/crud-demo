@@ -15,13 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-//@EnableTransactionManagement
-//@EnableAutoConfiguration
+@EnableAutoConfiguration
 @EnableCaching
 @SpringBootApplication
-//@EnableJpaRepositories(
-//		basePackages = "com.zx.cruddemo.dao",
-//		repositoryFactoryBeanClass = MyRepositoryFactoryBean.class)
 public class CruddemoApplication {
 
 

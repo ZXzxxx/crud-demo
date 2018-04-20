@@ -39,7 +39,7 @@ public class TeacherController extends BaseController {
     public Map<String, Object> updateTeacher(@RequestBody Teacher teacher,
                                              @RequestParam(value = "pageNum") Integer page,
                                              @RequestParam(value = "pageSize") Integer size) {
-        teacherService.update(teacher);
+        teacherService.update(teacher, "teacher");
         return getCurrentPageTeachers(page, size);
     }
 
@@ -48,7 +48,7 @@ public class TeacherController extends BaseController {
     public Map<String, Object> deleteTeacher(@RequestBody Teacher teacher,
                                              @RequestParam(value = "pageNum") Integer page,
                                              @RequestParam(value = "pageSize") Integer size){
-        teacherService.delete(teacher);
+        teacherService.delete(teacher, "teacher");
         return getCurrentPageTeachers(page, size);
     }
 
@@ -57,7 +57,7 @@ public class TeacherController extends BaseController {
     public Map<String, Object> deleteTeachers(@RequestBody List<Teacher> teachers,
                                         @RequestParam(value = "pageNum") Integer page,
                                         @RequestParam(value = "pageSize") Integer size){
-        teacherService.deleteList(teachers);
+        teacherService.deleteList(teachers, "teacher");
         return getCurrentPageTeachers(page, size);
     }
 

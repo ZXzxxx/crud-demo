@@ -3,6 +3,7 @@ package com.zx.cruddemo.service;
 import com.zx.cruddemo.jpaRepository.MyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,8 @@ public Optional<T> findOneByX(Specification<T> spec){
 
 //得到某实体类所有信息
 //cacheable表示该方法参与缓存，value不可为空，key是区别用的
+//缓存过期之后，如果多个线程同时请求对某个数据的访问，会同时去到数据库，导致数据库瞬间负荷增高。
+//设置sync为true时，只有一个线程的请求会去到数据库，其他线程都会等待直到缓存可用。这个设置可以减少对数据库的瞬间并发访问
 @Cacheable(value = "t.all", key = "#tName")
 public List<T> findAllT(String tName) {
     return basicDao.findAll();
@@ -64,7 +67,7 @@ public Page<T> findPageTsByXX(Specification<T> specification, Pageable pageable)
 
 //单个增加
 @CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
-public void add(T t) {
+public void add(T t, String tName) {
     this.basicDao.save(t);
 }
 
@@ -75,21 +78,20 @@ public void addList(Iterable<T> ts) {
 
 //单个更新
 @CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
-public void update(T t) {
+public void update(T t, String tName) {
     this.basicDao.saveAndFlush(t);
 }
 
 //单个删除，传的是实体类
 @CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
-public void delete(T t) {
+public void delete(T t, String tName) {
     this.basicDao.delete(t);
 }
 
 //批量删除,后台是生成一条SQL语句[之前那个是一条条删除]，效率更高些
 @CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
-public void deleteList(Iterable<T> ts) {
+public void deleteList(Iterable<T> ts, String tName) {
     this.basicDao.deleteInBatch(ts);
 }
-
 
 }
