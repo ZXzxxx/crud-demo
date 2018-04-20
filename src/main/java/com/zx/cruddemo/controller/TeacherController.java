@@ -1,37 +1,23 @@
 package com.zx.cruddemo.controller;
 
-import com.zx.cruddemo.domain.School;
 import com.zx.cruddemo.domain.Teacher;
 import com.zx.cruddemo.specification.Criteria;
 import com.zx.cruddemo.specification.Criterion;
 import com.zx.cruddemo.specification.Restrictions;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import com.zx.cruddemo.util.Helper;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @RestController
 public class TeacherController extends BaseController {
-
-    public Map<String, Object> getCurrentPageTeachers(Integer page, Integer size){
-        Map<String, Object> map = new HashMap<String, Object>();
-        Page<Teacher> list = teacherService.findAllPagebleT(new PageRequest(page-1, size), "teacher");  //这个PageRequest咋回事?
-        int total = teacherService.findAllT("teacher").size();
-        map.put("total", total);
-        map.put("rows", list.getContent());
-        return map;
-    }
 
     //查看
     @RequestMapping(value = "/getAllTeacher", method = RequestMethod.GET)
     public Map<String, Object> getAllTeacher(@RequestParam(value = "pageNum") Integer page,
                                              @RequestParam(value = "pageSize") Integer size) {
         Map<String, Object> map = new HashMap<String, Object>();
-        return getCurrentPageTeachers(page, size);
+        return Helper.getCurrentPageInfos(teacherService, "teacher", page, size);
     }
 
     //修改+增加
@@ -40,7 +26,7 @@ public class TeacherController extends BaseController {
                                              @RequestParam(value = "pageNum") Integer page,
                                              @RequestParam(value = "pageSize") Integer size) {
         teacherService.update(teacher, "teacher");
-        return getCurrentPageTeachers(page, size);
+        return Helper.getCurrentPageInfos(teacherService, "teacher", page, size);
     }
 
     //删除
@@ -49,7 +35,7 @@ public class TeacherController extends BaseController {
                                              @RequestParam(value = "pageNum") Integer page,
                                              @RequestParam(value = "pageSize") Integer size){
         teacherService.delete(teacher, "teacher");
-        return getCurrentPageTeachers(page, size);
+        return Helper.getCurrentPageInfos(teacherService, "teacher", page, size);
     }
 
     //批量删除
@@ -58,7 +44,7 @@ public class TeacherController extends BaseController {
                                         @RequestParam(value = "pageNum") Integer page,
                                         @RequestParam(value = "pageSize") Integer size){
         teacherService.deleteList(teachers, "teacher");
-        return getCurrentPageTeachers(page, size);
+        return Helper.getCurrentPageInfos(teacherService, "teacher", page, size);
     }
 
     //动态查找
@@ -68,21 +54,10 @@ public class TeacherController extends BaseController {
                                                  @RequestParam(value = "nameValue") String nameValue,
                                                  @RequestParam(value = "schoolIds") String schoolIds) {
 
-        String[] schoolStringIds = schoolIds.split(","); //用数组效率高
-        List<Integer>  schoolArrIds = new ArrayList<Integer>();
-        if(schoolStringIds[0] != ""){
-            for (int i = 0; i<schoolStringIds.length; i++) {
-                schoolArrIds.add(Integer.parseInt(schoolStringIds[i]));
-            }
-        }
+        List<Integer>  schoolArrIds = Helper.IDConverter(schoolIds);
         Criteria<Teacher> criteria = new Criteria<>();
         criteria.setOperator(Criterion.Operator.AND); //这里 设置条件是and还是or
         criteria.add(Restrictions.like("name", nameValue)).add(Restrictions.in("school", schoolArrIds));
-        Map<String, Object> map = new HashMap<String, Object>();
-        Page<Teacher> list = teacherService.findPageTsByXX(criteria, new PageRequest(page-1, size));  //这个PageRequest咋回事?
-        int total = teacherService.findTsByXX(criteria).size();
-        map.put("total", total);
-        map.put("rows", list.getContent());
-        return map;
+        return Helper.getCriteriaPageInfos(teacherService, criteria, page, size);
     }
 }
