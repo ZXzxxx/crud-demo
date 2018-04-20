@@ -2,6 +2,8 @@ package com.zx.cruddemo.service;
 
 import com.zx.cruddemo.jpaRepository.MyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -38,12 +40,15 @@ public Optional<T> findOneByX(Specification<T> spec){
 }
 
 //得到某实体类所有信息
-public List<T> findAllT() {
+//cacheable表示该方法参与缓存，value不可为空，key是区别用的
+@Cacheable(value = "t.all", key = "#tName")
+public List<T> findAllT(String tName) {
     return basicDao.findAll();
 }
 
 //得到可以分页的所有实体类信息
-public Page<T> findAllPagebleT(Pageable pt) {
+@Cacheable(value = "t.pageable.all", key = "#tName")
+public Page<T> findAllPagebleT(Pageable pt, String tName) {
     return basicDao.findAll(pt);
 }
 
@@ -57,11 +62,8 @@ public Page<T> findPageTsByXX(Specification<T> specification, Pageable pageable)
     return basicDao.findAll(specification, pageable);
 }
 
-public Page<T> findAllT(Pageable pageable) {
-    return this.basicDao.findAll(pageable);
-}
-
 //单个增加
+@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
 public void add(T t) {
     this.basicDao.save(t);
 }
@@ -72,16 +74,19 @@ public void addList(Iterable<T> ts) {
 }
 
 //单个更新
+@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
 public void update(T t) {
     this.basicDao.saveAndFlush(t);
 }
 
 //单个删除，传的是实体类
+@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
 public void delete(T t) {
     this.basicDao.delete(t);
 }
 
 //批量删除,后台是生成一条SQL语句[之前那个是一条条删除]，效率更高些
+@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
 public void deleteList(Iterable<T> ts) {
     this.basicDao.deleteInBatch(ts);
 }

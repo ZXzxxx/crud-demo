@@ -12,8 +12,8 @@ import java.util.List;
 public class Restrictions {
 
     //多表
-    public static SimpleExpression in(String fieldName, Object filedValue) {
-        if(StringUtils.isEmpty(filedValue))return null;
+    public static SimpleExpression in(String fieldName, List filedValue) {
+        if(filedValue.isEmpty()) return null;
         return new SimpleExpression (fieldName, filedValue, Criterion.Operator.IN);
     }
 

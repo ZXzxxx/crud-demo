@@ -19,8 +19,8 @@ public class TeacherController extends BaseController {
 
     public Map<String, Object> getCurrentPageTeachers(Integer page, Integer size){
         Map<String, Object> map = new HashMap<String, Object>();
-        Page<Teacher> list = teacherService.findAllPagebleT(new PageRequest(page-1, size));  //这个PageRequest咋回事?
-        int total = teacherService.findAllT().size();
+        Page<Teacher> list = teacherService.findAllPagebleT(new PageRequest(page-1, size), "teacher");  //这个PageRequest咋回事?
+        int total = teacherService.findAllT("teacher").size();
         map.put("total", total);
         map.put("rows", list.getContent());
         return map;
@@ -77,12 +77,7 @@ public class TeacherController extends BaseController {
         }
         Criteria<Teacher> criteria = new Criteria<>();
         criteria.setOperator(Criterion.Operator.AND); //这里 设置条件是and还是or
-        if (nameValue != "") {   //必须判断
-            criteria.add(Restrictions.like("name", nameValue));
-        }
-        if (!schoolArrIds.isEmpty()) {   //必须判断
-            criteria.add(Restrictions.in("school", schoolArrIds));
-        }
+        criteria.add(Restrictions.like("name", nameValue)).add(Restrictions.in("school", schoolArrIds));
         Map<String, Object> map = new HashMap<String, Object>();
         Page<Teacher> list = teacherService.findPageTsByXX(criteria, new PageRequest(page-1, size));  //这个PageRequest咋回事?
         int total = teacherService.findTsByXX(criteria).size();

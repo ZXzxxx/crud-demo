@@ -22,7 +22,7 @@ public class SchoolController extends BaseController {
     //查询所有
     @RequestMapping(value = "/getAllSchool", method = RequestMethod.GET)
     public List<School> getAllSchool() {
-        List<School> schools = schoolService.findAllT();
+        List<School> schools = schoolService.findAllT("school");
         return schools;
     }
 

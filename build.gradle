@@ -34,6 +34,9 @@ dependencies {
 	//	用java9，Hibernate 通常需要的 JAXB 不再默认提供，需要为项目添加上依赖
 	compile('javax.xml.bind:jaxb-api')
 
+	//添加redis依赖
+	compile('org.springframework.boot:spring-boot-starter-data-redis')
+
 	runtime('mysql:mysql-connector-java')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
