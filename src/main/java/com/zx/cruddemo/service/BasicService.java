@@ -51,6 +51,7 @@ public List<T> findAllT(String tName) {
 
 //得到可以分页的所有实体类信息
 @Cacheable(value = "t.pageable.all", key = "#tName")
+@CacheEvict(value = "t.pageable.all", beforeInvocation=true, key = "#tName")
 public Page<T> findAllPagebleT(Pageable pt, String tName) {
     return basicDao.findAll(pt);
 }
@@ -66,7 +67,7 @@ public Page<T> findPageTsByXX(Specification<T> specification, Pageable pageable)
 }
 
 //单个增加
-@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
+@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, key = "#tName")
 public void add(T t, String tName) {
     this.basicDao.save(t);
 }
@@ -77,19 +78,19 @@ public void addList(Iterable<T> ts) {
 }
 
 //单个更新
-@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
+@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, key = "#tName")
 public void update(T t, String tName) {
     this.basicDao.saveAndFlush(t);
 }
 
 //单个删除，传的是实体类
-@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
+@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, key = "#tName")
 public void delete(T t, String tName) {
     this.basicDao.delete(t);
 }
 
 //批量删除,后台是生成一条SQL语句[之前那个是一条条删除]，效率更高些
-@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, allEntries=true)
+@CacheEvict(value = {"t.all","t.pageable.all"}, beforeInvocation=true, key = "#tName")
 public void deleteList(Iterable<T> ts, String tName) {
     this.basicDao.deleteInBatch(ts);
 }

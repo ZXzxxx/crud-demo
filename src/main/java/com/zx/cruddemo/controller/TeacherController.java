@@ -15,8 +15,11 @@ public class TeacherController extends BaseController {
     //查看
     @RequestMapping(value = "/getAllTeacher", method = RequestMethod.GET)
     public Map<String, Object> getAllTeacher(@RequestParam(value = "pageNum") Integer page,
-                                             @RequestParam(value = "pageSize") Integer size) {
+                                             @RequestParam(value = "pageSize") Integer size,
+                                             @RequestParam(value = "sortKey") String sortKey,
+                                             @RequestParam(value = "sortOrder") String sortOrder) {
         Map<String, Object> map = new HashMap<String, Object>();
+        Helper.getSortInfos(sortKey, sortOrder);  //获取sort信息
         return Helper.getCurrentPageInfos(teacherService, "teacher", page, size);
     }
 
